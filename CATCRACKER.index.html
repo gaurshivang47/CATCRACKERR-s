@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOVEREIGN COMMAND | CAT 2026 Ultimate</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=JetBrains+Mono:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,700;1,400&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                fontFamily: {
+                    sans: ['Outfit', 'sans-serif'],
+                    serif: ['Cormorant Garamond', 'serif'],
+                    display: ['Playfair Display', 'serif'],
+                    mono: ['Space Grotesk', 'monospace'],
+                    technical: ['JetBrains Mono', 'monospace'],
+                },
+                extend: {
+                    colors: {
+                        gold: '#D4AF37',
+                        obsidian: '#0A0A0A',
+                        crimson: '#DC143C'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg: #F8FAFC;
+            --text: #000000;
+            --accent: #D4AF37;
+            --glass: rgba(255, 255, 255, 0.75);
+            --border: rgba(0, 0, 0, 0.1);
+            --sidebar-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        /* Tactical Focus Themes */
+        body.theme-noir { 
+            --bg: #050505; --text: #F5F2ED; --accent: #D4AF37; 
+            --glass: rgba(20, 20, 20, 0.6); --border: rgba(255, 255, 255, 0.1); 
+            --sidebar-bg: rgba(5, 5, 5, 0.85);
+        }
+        body.theme-lumina { 
+            --bg: #FFFFFF; --text: #000000; --accent: #000000; 
+            --glass: rgba(255, 255, 255, 0.95); --border: rgba(0, 0, 0, 0.2); 
+            --sidebar-bg: rgba(255, 255, 255, 1);
+        }
+        body.theme-cyber { 
+            --bg: #010409; --text: #00F2FF; --accent: #00F2FF; 
+            --glass: rgba(1, 4, 9, 0.7); --border: rgba(0, 242, 255, 0.3); 
+            --sidebar-bg: rgba(1, 4, 9, 0.95);
+        }
+        body.theme-polished { 
+            --bg: #000000; --text: #FFFFFF; --accent: #FFFFFF; 
+            --glass: rgba(20, 20, 20, 0.9); --border: rgba(255, 255, 255, 0.3); 
+            --sidebar-bg: rgba(0, 0, 0, 1);
+        }
+        body.theme-polished * { font-weight: 700 !important; }
+
+        body.theme-slate { 
+            --bg: #0F172A; --text: #F1F5F9; --accent: #38BDF8; 
+            --glass: rgba(30, 41, 59, 0.7); --border: rgba(255, 255, 255, 0.1); 
+            --sidebar-bg: rgba(15, 23, 42, 0.9);
+        }
+
+        body { 
+            background-color: var(--bg);
+            color: var(--text);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-x: hidden;
+            background-size: cover;
+            background-attachment: fixed;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .page { display: none !important; opacity: 0; }
+        .page.active { display: block !important; animation: pageIn 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+        
+        @keyframes pageIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .nav-link {
+            transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            color: var(--text);
+            opacity: 0.5;
+        }
+        .nav-link.active {
+            background: var(--accent);
+            color: #000 !important;
+            opacity: 1;
+            font-weight: 900;
+            box-shadow: 0 10px 25px -5px var(--accent);
+            transform: scale(1.05);
+        }
+
+        .hero-text { 
+            font-family: 'Playfair Display', serif; 
+            letter-spacing: -0.04em; 
+            line-height: 1.1; 
+            outline: none; 
+            font-size: 2.2rem;
+        }
+        @media (min-width: 1024px) { .hero-text { font-size: 4rem; } }
+
+        .matrix-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; table-layout: fixed; }
+        .matrix-table tr { background: rgba(0,0,0,0.03); transition: all 0.2s; }
+        .matrix-table td { padding: 12px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .matrix-table td:first-child { width: 40px; border-left: 1px solid var(--border); border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+        .matrix-table td:last-child { border-right: 1px solid var(--border); border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+
+        .text-focus { color: var(--accent) !important; font-weight: 900; }
+        #sidebar { background: var(--sidebar-bg); border-right: 1px solid var(--border); backdrop-filter: blur(40px); z-index: 1000; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+
+        .sov-check {
+            width: 22px; height: 22px; border: 2px solid var(--accent); border-radius: 6px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;
+        }
+        .sov-check.checked { background: var(--accent); }
+        .sov-check.checked i { color: black; }
+
+        /* Vocab Expansion Prevention */
+        .vocab-card {
+            word-break: break-word;
+            overflow-wrap: break-word;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            max-width: 100%;
+        }
+
+        [contenteditable]:hover { background: rgba(212, 175, 55, 0.1); border-radius: 4px; }
+        [contenteditable]:focus { outline: 2px solid var(--accent); background: transparent; }
+    </style>
+</head>
+<body id="app-body" class="theme-noir min-h-screen">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-20 lg:w-64 flex flex-col items-center py-8 transition-all duration-700">
+        <div class="mb-12 group cursor-pointer" onclick="navigate('home')">
+            <div class="w-14 h-14 rounded-2xl bg-black flex items-center justify-center text-gold shadow-2xl group-hover:scale-110 transition-transform border border-white/10">
+                <i data-lucide="shield-check" width="28"></i>
+            </div>
+        </div>
+
+        <nav class="flex-1 flex flex-col gap-3 w-full px-4 overflow-y-auto hide-scrollbar">
+            <button onclick="navigate('home')" id="nav-home" class="nav-link flex items-center gap-4 p-4 rounded-2xl">
+                <i data-lucide="layout-dashboard"></i> <span class="hidden lg:block text-[11px] uppercase font-black tracking-widest">Command</span>
+            </button>
+            <button onclick="navigate('protocols')" id="nav-protocols" class="nav-link flex items-center gap-4 p-4 rounded-2xl">
+                <i data-lucide="target"></i> <span class="hidden lg:block text-[11px] uppercase font-black tracking-widest">Protocols</span>
+            </button>
+            <button onclick="navigate('matrix')" id="nav-matrix" class="nav-link flex items-center gap-4 p-4 rounded-2xl">
+                <i data-lucide="grid-3x3"></i> <span class="hidden lg:block text-[11px] uppercase font-black tracking-widest">The Matrix</span>
+            </button>
+            <button onclick="navigate('registry')" id="nav-registry" class="nav-link flex items-center gap-4 p-4 rounded-2xl">
+                <i data-lucide="table-2"></i> <span class="hidden lg:block text-[11px] uppercase font-black tracking-widest">Registry</span>
+            </button>
+            <button onclick="navigate('vocab')" id="nav-vocab" class="nav-link flex items-center gap-4 p-4 rounded-2xl">
+                <i data-lucide="book-marked"></i> <span class="hidden lg:block text-[11px] uppercase font-black tracking-widest">Lexicon</span>
+            </button>
+            <button onclick="navigate('warroom')" id="nav-warroom" class="nav-link flex items-center gap-4 p-4 rounded-2xl">
+                <i data-lucide="file-text"></i> <span class="hidden lg:block text-[11px] uppercase font-black tracking-widest">War Notes</span>
+            </button>
+            <button onclick="navigate('sanctum')" id="nav-sanctum" class="nav-link flex items-center gap-4 p-4 rounded-2xl">
+                <i data-lucide="zap"></i> <span class="hidden lg:block text-[11px] uppercase font-black tracking-widest">Sanctum</span>
+            </button>
+            <button onclick="navigate('intel')" id="nav-intel" class="nav-link flex items-center gap-4 p-4 rounded-2xl">
+                <i data-lucide="bar-chart-big"></i> <span class="hidden lg:block text-[11px] uppercase font-black tracking-widest">Intel</span>
+            </button>
+            <button onclick="navigate('spirit')" id="nav-spirit" class="nav-link flex items-center gap-4 p-4 rounded-2xl">
+                <i data-lucide="flame"></i> <span class="hidden lg:block text-[11px] uppercase font-black tracking-widest">Spirit</span>
+            </button>
+        </nav>
+
+        <button onclick="navigate('settings')" id="nav-settings" class="mt-auto flex items-center gap-4 p-4 rounded-2xl text-white/40 hover:text-white transition-all">
+            <i data-lucide="sliders"></i> <span class="hidden lg:block text-[11px] uppercase font-black tracking-widest">Config</span>
+        </button>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="ml-20 lg:ml-64 p-4 lg:p-12 min-h-screen relative z-10 transition-all duration-500">
+
+        <div id="page-container" class="max-w-7xl mx-auto">
+            
+            <!-- 1. COMMAND (HOME) -->
+            <section id="page-home" class="page active space-y-12">
+                <div class="glass-panel rounded-[4rem] p-10 lg:p-24 relative overflow-hidden group border-white/20">
+                    <div class="absolute -top-32 -right-32 w-[35rem] h-[35rem] bg-gold/5 rounded-full blur-[140px]"></div>
+                    <div class="relative z-10 text-center space-y-12">
+                        <div id="hero-target-label" contenteditable="true" onblur="saveHeroData()" class="inline-block px-8 py-3 rounded-full bg-black/90 backdrop-blur text-gold text-[10px] font-black uppercase tracking-[0.6em] mb-4 shadow-2xl border border-white/10 outline-none hover:border-gold transition-all">
+                            Strategic Target: Nov 2026
+                        </div>
+                        
+                        <h2 id="hero-main-title" contenteditable="true" onblur="saveHeroData()" class="hero-text font-black italic uppercase tracking-tighter text-focus transition-all">
+                            EXECUTE EXCELLENCE
+                        </h2>
+
+                        <!-- Countdown -->
+                        <div class="flex flex-wrap justify-center gap-6 lg:gap-8">
+                            <div class="timer-box w-28 lg:w-32 py-8 rounded-[2.5rem] shadow-xl glass-panel">
+                                <div id="cd-days" class="text-4xl lg:text-5xl font-mono font-bold text-focus">000</div>
+                                <div class="text-[10px] uppercase font-black opacity-40 mt-2 tracking-widest">Days</div>
+                            </div>
+                            <div class="timer-box w-24 lg:w-28 py-8 rounded-[2.5rem] shadow-xl glass-panel">
+                                <div id="cd-hours" class="text-4xl lg:text-5xl font-mono font-bold text-focus">00</div>
+                                <div class="text-[10px] uppercase font-black opacity-40 mt-2 tracking-widest">Hrs</div>
+                            </div>
+                            <div class="timer-box w-24 lg:w-28 py-8 rounded-[2.5rem] shadow-xl glass-panel">
+                                <div id="cd-mins" class="text-4xl lg:text-5xl font-mono font-bold text-focus">00</div>
+                                <div class="text-[10px] uppercase font-black opacity-40 mt-2 tracking-widest">Min</div>
+                            </div>
+                            <div class="timer-box w-24 lg:w-28 py-8 rounded-[2.5rem] shadow-xl glass-panel">
+                                <div id="cd-secs" class="text-4xl lg:text-5xl font-mono font-bold text-focus">00</div>
+                                <div class="text-[10px] uppercase font-black opacity-40 mt-2 tracking-widest">Sec</div>
+                            </div>
+                        </div>
+
+                        <div class="max-w-3xl mx-auto">
+                            <p id="main-mantra" contenteditable="true" onblur="saveMantra(this.innerText)" class="font-serif italic text-xl lg:text-2xl opacity-90 leading-snug outline-none cursor-text hover:text-gold transition-colors">"The pain of discipline is far less than the pain of regret."</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                    <div class="glass-panel p-12 rounded-[3.5rem] flex flex-col items-center justify-center text-center group">
+                        <h3 class="text-[11px] font-black uppercase tracking-[0.4em] opacity-40 mb-10">Mission Mastery</h3>
+                        <div class="relative w-64 h-64 transition-transform duration-700 group-hover:scale-105">
+                            <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" fill="transparent" stroke="currentColor" stroke-width="8" class="opacity-10"></circle>
+                                <circle id="ready-circle" cx="50" cy="50" r="45" fill="transparent" stroke="var(--accent)" stroke-width="8" stroke-dasharray="283" stroke-dashoffset="283" class="transition-all duration-1000"></circle>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span id="ready-pct" class="text-7xl font-black text-focus">0%</span>
+                                <span class="text-[9px] font-black opacity-40 uppercase tracking-widest mt-1">Overall Ready</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-12 rounded-[3.5rem] lg:col-span-2 space-y-8">
+                        <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                            <h3 class="text-xs font-black uppercase tracking-[0.3em]">Directives</h3>
+                            <button onclick="navigate('protocols')" class="text-[11px] font-black uppercase text-focus hover:underline">Launch Routine</button>
+                        </div>
+                        <div id="dash-routine" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <!-- Injected -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. PROTOCOLS -->
+            <section id="page-protocols" class="page space-y-12">
+                <div class="flex justify-between items-end">
+                    <h2 class="hero-text italic uppercase leading-none tracking-tight">The <span class="text-focus">Routine</span></h2>
+                    <button onclick="resetRoutine()" class="px-6 py-2 bg-black text-gold rounded-full font-mono text-[10px] uppercase font-black hover:scale-105 transition-all">Daily Reset</button>
+                </div>
+                <div id="protocol-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20"></div>
+            </section>
+
+            <!-- 3. THE MATRIX -->
+            <section id="page-matrix" class="page space-y-16 pb-20">
+                <div class="text-center space-y-6">
+                    <h2 class="hero-text uppercase tracking-tighter leading-none">The <span class="text-focus">Matrix</span></h2>
+                    <p class="font-mono text-[11px] opacity-40 tracking-widest uppercase font-black">Strategic Syllabus Hub</p>
+                </div>
+                <div id="matrix-canvas" class="space-y-16"></div>
+            </section>
+
+            <!-- 4. REGISTRY -->
+            <section id="page-registry" class="page space-y-8">
+                <div class="flex justify-between items-center">
+                    <h2 class="hero-text italic uppercase">Operation <span class="text-focus">Log</span></h2>
+                    <button onclick="addLogRow()" class="px-10 py-4 bg-black text-gold rounded-2xl font-black text-[11px] uppercase border border-gold/30 hover:scale-105 transition-all shadow-2xl">+ New Entry</button>
+                </div>
+                <div class="glass-panel rounded-[3.5rem] overflow-hidden overflow-x-auto border-white/10">
+                    <table class="w-full text-left font-mono text-[12px] uppercase tracking-widest">
+                        <thead>
+                            <tr class="bg-black/20 text-gold">
+                                <th class="p-8">Date</th>
+                                <th class="p-8">Module</th>
+                                <th class="p-8">Tactical Topic</th>
+                                <th class="p-8">Efficiency</th>
+                                <th class="p-8 w-12"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="registry-body" class="font-black"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 5. LEXICON -->
+            <section id="page-vocab" class="page space-y-12">
+                <div class="flex flex-col lg:flex-row justify-between items-end gap-6">
+                    <h2 class="monumental text-[10rem] lg:text-[12rem] italic leading-none">Lexicon.</h2>
+                    <div class="flex flex-wrap items-center gap-6">
+                        <div class="relative border-b-2 border-white/20 pb-3">
+                            <i data-lucide="search" class="absolute left-0 top-1 opacity-40" width="16"></i>
+                            <input type="text" id="v-search" placeholder="SEARCH_NODES" class="pl-10 bg-transparent text-[12px] tracking-widest uppercase w-64 font-black">
+                        </div>
+                        <button onclick="openModal('vocab')" class="font-mono text-[11px] text-gold cursor-pointer border-2 border-gold/40 px-8 py-3 rounded-2xl hover:bg-gold hover:text-black transition-all font-black shadow-xl">MANUAL INSERT</button>
+                        <label class="font-mono text-[11px] text-gold cursor-pointer border-2 border-gold/40 px-8 py-3 rounded-2xl hover:bg-gold hover:text-black transition-all font-black shadow-xl">
+                            PDF SCAN <input type="file" id="pdf-upload" class="hidden" accept="application/pdf" onchange="extractPDF(this)">
+                        </label>
+                    </div>
+                </div>
+                <div id="vocab-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-20"></div>
+            </section>
+
+            <!-- 6. WAR ROOM -->
+            <section id="page-warroom" class="page h-[80vh] flex flex-col space-y-8">
+                <div class="flex justify-between items-center">
+                    <h2 class="hero-text uppercase tracking-tighter leading-none">War <span class="text-focus">Notes</span></h2>
+                    <div id="sync-status" class="font-mono text-[11px] opacity-0 text-emerald-500 font-black tracking-widest">NODES_SECURED</div>
+                </div>
+                <textarea id="war-pad" class="flex-1 w-full glass-panel p-12 rounded-[4rem] font-serif text-3xl lg:text-4xl opacity-100 leading-relaxed outline-none focus:border-gold/30 transition-all hide-scrollbar" placeholder="Inscribe strategies..."></textarea>
+            </section>
+
+            <!-- 7. SANCTUM -->
+            <section id="page-sanctum" class="page h-[80vh] flex flex-col items-center justify-center relative">
+                <div id="sanctum-pulse" class="absolute w-[600px] h-[600px] bg-gold/5 rounded-full blur-[140px] transition-all duration-1000"></div>
+                <div class="text-center space-y-16 relative z-10">
+                    <span class="font-mono text-[18px] text-gold tracking-[2em] uppercase font-black opacity-60">Focus Sanctum</span>
+                    <h2 id="timer-display" class="monumental text-[18rem] lg:text-[22rem] opacity-100 text-focus tracking-tighter">45:00</h2>
+                    <div class="flex gap-12 justify-center">
+                        <button id="timer-btn" onclick="toggleTimer()" class="font-mono text-sm bg-black text-gold px-16 py-6 rounded-full uppercase tracking-widest font-black shadow-2xl border border-gold/30 hover:scale-110 transition-all">Start_Cycle</button>
+                        <button onclick="abortTimer()" class="font-mono text-sm border-2 border-crimson/30 text-crimson px-16 py-6 rounded-full uppercase tracking-widest font-black hover:bg-crimson/10 transition-all">Abort</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 8. INTEL -->
+            <section id="page-intel" class="page space-y-12 pb-20">
+                <h2 class="hero-text italic uppercase leading-none tracking-tight">Tactical <span class="text-focus">Intel</span></h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div class="glass-panel p-12 rounded-[4rem] h-[550px] flex flex-col shadow-2xl border-white/5">
+                        <h4 class="font-mono text-[12px] uppercase tracking-widest text-gold mb-12 font-black">Neural Mastery Radar</h4>
+                        <div class="flex-1 min-h-0"><canvas id="masteryChart"></canvas></div>
+                    </div>
+                    <div class="glass-panel p-12 rounded-[4rem] h-[550px] flex flex-col shadow-2xl border-white/5">
+                        <h4 class="font-mono text-[12px] uppercase tracking-widest text-gold mb-12 font-black">Study Velocity (Efficiency)</h4>
+                        <div class="flex-1 min-h-0"><canvas id="growthChart"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 9. SPIRIT -->
+            <section id="page-spirit" class="page space-y-12 pb-20">
+                <div class="flex justify-between items-center">
+                    <h2 class="hero-text italic uppercase leading-none tracking-tight">Spirit <span class="text-focus">Fuel</span></h2>
+                    <button onclick="addMantra()" class="px-10 py-4 bg-white/5 border-2 border-white/20 rounded-2xl font-mono text-[11px] uppercase hover:bg-white hover:text-black transition-all font-black shadow-xl">+ Wisdom</button>
+                </div>
+                <div id="spirit-deck" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"></div>
+            </section>
+
+            <!-- 10. CONFIG -->
+            <section id="page-settings" class="page space-y-12 pb-20">
+                <h2 class="hero-text uppercase">Config</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-20">
+                    <div class="space-y-12">
+                        <div class="space-y-8">
+                            <h4 class="font-mono text-[12px] uppercase tracking-widest text-gold font-black">Visual Modes</h4>
+                            <div class="flex flex-wrap gap-8">
+                                <button onclick="setTheme('noir')" class="w-14 h-14 rounded-xl bg-black border-2 border-gold shadow-2xl hover:scale-110 transition-all"></button>
+                                <button onclick="setTheme('lumina')" class="w-14 h-14 rounded-xl bg-white border-2 border-black shadow-2xl hover:scale-110 transition-all"></button>
+                                <button onclick="setTheme('cyber')" class="w-14 h-14 rounded-xl bg-[#020617] border-2 border-cyan-400 shadow-2xl hover:scale-110 transition-all"></button>
+                                <button onclick="setTheme('polished')" class="w-14 h-14 rounded-xl bg-stone-900 border-2 border-white shadow-2xl hover:scale-110 transition-all"></button>
+                                <button onclick="setTheme('slate')" class="w-14 h-14 rounded-xl bg-[#0F172A] border-2 border-sky-400 shadow-2xl hover:scale-110 transition-all"></button>
+                            </div>
+                        </div>
+                        <div class="space-y-8">
+                            <h4 class="font-mono text-[12px] uppercase tracking-widest text-gold font-black">Environment skin</h4>
+                            <label class="block p-16 border-4 border-dashed border-white/10 rounded-[3rem] cursor-pointer hover:border-gold transition-all text-center bg-white/5">
+                                <span class="font-mono text-[12px] opacity-40 uppercase font-black tracking-widest">Inject wallpaper</span>
+                                <input type="file" id="bg-upload" class="hidden" accept="image/*" onchange="setCustomBG(this)">
+                            </label>
+                            <button onclick="clearBG()" class="text-[11px] font-mono opacity-30 uppercase font-black hover:underline">Revert Visuals</button>
+                        </div>
+                    </div>
+                    <div class="glass-panel p-16 rounded-[4rem] flex flex-col justify-between shadow-2xl border-white/10">
+                        <div class="space-y-8">
+                            <p class="font-mono text-[14px] text-gold font-black uppercase tracking-[0.4em]">Sovereign Archive</p>
+                            <p class="font-mono text-[12px] opacity-70 leading-relaxed uppercase tracking-widest">All study data is encrypted and saved to your physical node. No external cloud required.</p>
+                        </div>
+                        <button onclick="hardReset()" class="text-crimson font-black font-mono text-[12px] uppercase tracking-[0.3em] border-b-2 border-crimson/30 pb-2 w-fit mt-16 hover:border-crimson transition-all">FACTORY_RESET (Wipe Node)</button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- MODAL -->
+    <div id="sov-modal" class="hidden fixed inset-0 z-[10000] bg-black/98 backdrop-blur-3xl flex items-center justify-center p-8">
+        <div id="modal-inner" class="max-w-3xl w-full p-16 glass-panel rounded-[4rem] space-y-10 border-gold/30"></div>
+    </div>
+
+    <script>
+        const MASTER_SYLLABUS = {
+            QA: {
+                title: "Quantitative Aptitude",
+                modules: [
+                    { name: "Arithmetic Core", topics: ["Percentages", "Profit, Loss & Discount", "Interest (SI/CI)", "Ratio, Proportion & Variation", "Averages & Mixtures", "Time, Speed & Distance", "Time & Work"] },
+                    { name: "Algebra Lab", topics: ["Linear & Quadratic Equations", "Inequalities & Modulus", "Logarithms", "Functions & Graphs", "Sequence & Series (AP/GP)"] },
+                    { name: "Geometry Shield", topics: ["Triangles & Polygons", "Circles", "Mensuration 2D/3D", "Coordinate Geometry", "Trigonometry"] },
+                    { name: "Number Protocol", topics: ["Divisibility & Remainders", "HCF & LCM", "Factorials & Indices", "Base Systems"] },
+                    { name: "Modern dynamics", topics: ["P & C", "Probability", "Set Theory (Venn)"] }
+                ]
+            },
+            VARC: {
+                title: "Verbal Ability & RC",
+                modules: [
+                    { name: "Reading Engine", topics: ["Philosophy & Abstract", "Economy & Business", "Science & Tech", "Social & Politics", "Literature & Arts"] },
+                    { name: "Verbal Logic", topics: ["Para Jumbles (TITA)", "Para Summary", "Odd One Out", "Para Completion", "Critical Reasoning"] }
+                ]
+            },
+            DILR: {
+                title: "Data Intelligence",
+                modules: [
+                    { name: "Visual Data Intel", topics: ["Complex Tables", "Caselets", "Charts (Pie/Line/Bar)", "Radar & Spider Graphs", "Venn (Max/Min)"] },
+                    { name: "Logical Protocol", topics: ["Linear & Circular Arrangement", "Games & Tournaments", "Selection & Distribution", "Binary Logic", "Cubes & Dice", "Networks"] }
+                ]
+            }
+        };
+
+        const INITIAL_ROUTINE = [
+            { id: 'aeon', label: '1 Aeon Synthesis', sub: 'Depth: Philosophical' },
+            { id: 'rc', label: '4 RC Siege', sub: 'Target: 12m/Set' },
+            { id: 'quant', label: '20 Neural Drills', sub: 'Mixed Quant Sections' },
+            { id: 'dilr', label: '2 DILR Grids', sub: 'Complex Analysis' },
+            { id: 'vocab', label: '25 Lexicon Units', sub: 'Vault Recirculation' }
+        ];
+
+        // LOAD DATA OR INIT
+        let state = JSON.parse(localStorage.getItem('sov_ultimate_cache')) || {
+            active: 'home',
+            theme: 'noir',
+            mantra: "The pain of discipline is far less than the pain of regret.",
+            heroTitle: "EXECUTE EXCELLENCE",
+            heroLabel: "Strategic Target: Nov 2026",
+            bg: 'none',
+            matrix: {},
+            routine: INITIAL_ROUTINE.map(r => ({...r, done: false})),
+            registry: [],
+            vocab: [],
+            spirit: [{id: 1, text: "The harder the conflict, the more glorious the triumph.", auth: "Thomas Paine"}],
+            notes: ""
+        };
+
+        function init() {
+            lucide.createIcons();
+            setTheme(state.theme);
+            if(state.bg !== 'none') document.body.style.backgroundImage = `url(${state.bg})`;
+            
+            document.getElementById('hero-main-title').innerText = state.heroTitle;
+            document.getElementById('hero-target-label').innerText = state.heroLabel;
+            document.getElementById('main-mantra').innerText = state.mantra;
+            
+            navigate(state.active);
+            renderAll();
+            startClocks();
+            initNotes();
+        }
+
+        function save() {
+            localStorage.setItem('sov_ultimate_cache', JSON.stringify(state));
+        }
+
+        function navigate(p) {
+            state.active = p;
+            document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
+            document.getElementById(`page-${p}`).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`nav-${p}`)?.classList.add('active');
+            if(p === 'intel') setTimeout(initCharts, 100);
+            save();
+        }
+
+        function renderAll() {
+            renderDashboard();
+            renderProtocols();
+            renderMatrix();
+            renderRegistry();
+            renderVocab();
+            renderSpirit();
+        }
+
+        function renderDashboard() {
+            const r = document.getElementById('dash-routine');
+            const p = state.routine.filter(x => !x.done).slice(0, 4);
+            r.innerHTML = p.map(x => `
+                <div class="flex items-center gap-5 p-6 glass-panel rounded-[2rem]">
+                    <div class="w-4 h-4 rounded-full bg-gold animate-pulse shadow-[0_0_15px_rgba(212,175,55,0.4)]"></div>
+                    <span class="font-mono text-[11px] uppercase font-black tracking-widest text-focus">${x.label}</span>
+                </div>
+            `).join('');
+            
+            let total=0, done=0;
+            Object.values(MASTER_SYLLABUS).forEach(s => s.modules.forEach(m => m.topics.forEach(x => { total++; if(state.matrix[x]) done++; })));
+            const pct = Math.round((done/total)*100);
+            document.getElementById('ready-pct').innerText = pct + '%';
+            document.getElementById('ready-circle').style.strokeDashoffset = 283 - (283 * (done/total));
+        }
+
+        function renderProtocols() {
+            const g = document.getElementById('protocol-grid');
+            g.innerHTML = state.routine.map(r => `
+                <div onclick="toggleRoutine('${r.id}')" class="p-12 glass-panel rounded-[3.5rem] cursor-pointer group transition-all duration-500 ${r.done ? 'opacity-20 scale-95 grayscale' : 'hover:border-gold hover:shadow-2xl'}">
+                    <div class="flex items-center gap-8">
+                        <div class="sov-check ${r.done ? 'checked' : ''}">${r.done ? '<i data-lucide="check" width="18"></i>' : ''}</div>
+                        <div>
+                            <h4 class="font-display italic text-4xl font-black ${r.done ? 'line-through opacity-50' : ''}">${r.label}</h4>
+                            <p class="font-mono text-[11px] uppercase tracking-widest opacity-40 mt-2 font-black">${r.sub}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderMatrix() {
+            const c = document.getElementById('matrix-canvas');
+            c.innerHTML = Object.entries(MASTER_SYLLABUS).map(([k, s]) => {
+                let totalS = 0, doneS = 0;
+                s.modules.forEach(m => m.topics.forEach(t => { totalS++; if(state.matrix[t]) doneS++; }));
+                return `
+                <div class="glass-panel p-12 rounded-[4rem] space-y-10 shadow-2xl border-white/10">
+                    <div class="flex justify-between items-end border-b border-white/10 pb-6">
+                        <div>
+                            <h3 class="hero-text text-6xl uppercase text-focus tracking-tighter">${s.title}</h3>
+                            <p class="font-mono text-[11px] uppercase font-black opacity-30 tracking-[0.3em] mt-2">Tactical Command Hub</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-5xl font-mono font-bold text-focus">${Math.round((doneS/totalS)*100)}%</div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        ${s.modules.map(m => `
+                            <div class="space-y-4">
+                                <h4 class="font-mono text-[12px] opacity-40 uppercase tracking-[0.4em] font-black pl-2">${m.name}</h4>
+                                <table class="matrix-table">
+                                    <tbody>
+                                        ${m.topics.map(t => `
+                                            <tr onclick="toggleMatrix('${t}')" class="cursor-pointer">
+                                                <td class="w-10"><div class="sov-check ${state.matrix[t] ? 'checked' : ''}">${state.matrix[t] ? '<i data-lucide="check" width="12"></i>' : ''}</div></td>
+                                                <td class="font-mono text-[12px] font-black tracking-widest ${state.matrix[t] ? 'opacity-30 line-through' : ''}">${t}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function renderRegistry() {
+            const b = document.getElementById('registry-body');
+            b.innerHTML = state.registry.map((r, i) => `
+                <tr class="hover:bg-white/5 transition-all">
+                    <td class="p-0"><input type="date" value="${r.date}" onchange="updateRegistry(${i}, 'date', this.value)" class="w-full p-8 outline-none bg-transparent"></td>
+                    <td class="p-0"><input type="text" value="${r.node}" onchange="updateRegistry(${i}, 'node', this.value)" class="w-full p-8 outline-none bg-transparent" placeholder="Module..."></td>
+                    <td class="p-0"><input type="text" value="${r.content}" onchange="updateRegistry(${i}, 'content', this.value)" class="w-full p-8 outline-none bg-transparent" placeholder="Topic"></td>
+                    <td class="p-0"><input type="number" value="${r.int}" onchange="updateRegistry(${i}, 'int', this.value)" class="w-full p-8 outline-none bg-transparent"></td>
+                    <td class="p-8 text-center"><button onclick="delRegistry(${i})" class="text-crimson/50 hover:text-crimson transition-all"><i data-lucide="trash-2" width="18"></i></button></td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderVocab() {
+            const q = document.getElementById('v-search').value.toLowerCase();
+            const g = document.getElementById('vocab-grid');
+            g.innerHTML = state.vocab.filter(v => v.word.toLowerCase().includes(q) || (v.mean && v.mean.toLowerCase().includes(q))).map((v, i) => `
+                <div class="glass-panel p-8 rounded-[3rem] space-y-6 group relative vocab-card shadow-xl border-white/5">
+                    <button onclick="delVocab(${i})" class="absolute top-6 right-6 opacity-0 group-hover:opacity-100 text-crimson transition-all"><i data-lucide="trash-2" width="16"></i></button>
+                    <h4 class="font-display italic text-4xl text-focus leading-tight">${v.word}</h4>
+                    <p class="font-mono text-[11px] uppercase tracking-widest opacity-40 font-black">${v.type || 'WORD'}</p>
+                    <p class="font-serif italic opacity-100 text-xl leading-relaxed text-balance">${v.mean || '...'}</p>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderSpirit() {
+            const d = document.getElementById('spirit-deck');
+            d.innerHTML = state.spirit.map(s => `
+                <div class="p-12 glass-panel rounded-[4rem] relative group border-gold/10 shadow-2xl flex flex-col justify-between">
+                    <button onclick="delSpirit(${s.id})" class="absolute top-8 right-8 opacity-0 group-hover:opacity-100 text-crimson transition-all"><i data-lucide="trash-2" width="18"></i></button>
+                    <div>
+                        <p class="font-serif text-3xl italic leading-relaxed opacity-100">"${s.text}"</p>
+                        <cite class="block font-mono text-[11px] text-gold uppercase tracking-[0.6em] mt-8 font-black">— ${s.auth || 'Source'}</cite>
+                    </div>
+                    <button onclick="pushSpiritToHome('${s.text}', '${s.auth}')" class="mt-10 px-6 py-3 bg-black text-gold rounded-2xl font-black text-[9px] uppercase tracking-[0.2em] border border-gold/20 hover:scale-105 transition-all opacity-0 group-hover:opacity-100">
+                        Push to Command
+                    </button>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function pushSpiritToHome(text, auth) {
+            state.mantra = `"${text}"${auth ? " — " + auth : ""}`;
+            document.getElementById('main-mantra').innerText = state.mantra;
+            save();
+            navigate('home');
+        }
+
+        function toggleRoutine(id) { const r = state.routine.find(x => x.id === id); r.done = !r.done; save(); renderAll(); }
+        function resetRoutine() { state.routine.forEach(r => r.done = false); save(); renderAll(); }
+        function toggleMatrix(t) { state.matrix[t] = !state.matrix[t]; save(); renderDashboard(); renderMatrix(); }
+        function addLogRow() { state.registry.unshift({date: new Date().toISOString().split('T')[0], node: '', content: '', int: 0}); save(); renderRegistry(); }
+        function updateRegistry(i, f, v) { state.registry[i][f] = v; save(); }
+        function delRegistry(i) { state.registry.splice(i, 1); save(); renderRegistry(); }
+        function delVocab(i) { state.vocab.splice(i, 1); save(); renderVocab(); }
+        function delSpirit(id) { state.spirit = state.spirit.filter(x => x.id !== id); save(); renderSpirit(); }
+
+        function saveHeroData() {
+            state.heroTitle = document.getElementById('hero-main-title').innerText;
+            state.heroLabel = document.getElementById('hero-target-label').innerText;
+            save();
+        }
+        function saveMantra(v) { state.mantra = v; save(); }
+
+        function setTheme(t) {
+            state.theme = t;
+            document.body.className = `theme-${t} min-h-screen`;
+            save();
+        }
+
+        function setCustomBG(input) {
+            const f = input.files[0]; if(!f) return;
+            const r = new FileReader();
+            r.onload = (e) => { state.bg = e.target.result; document.body.style.backgroundImage = `url(${state.bg})`; save(); };
+            r.readAsDataURL(f);
+        }
+        function clearBG() { state.bg = 'none'; document.body.style.backgroundImage = 'none'; save(); }
+
+        async function extractPDF(input) {
+            const f = input.files[0]; if(!f) return;
+            const reader = new FileReader();
+            reader.onload = async function() {
+                const typedarray = new Uint8Array(this.result);
+                const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                let text = "";
+                for(let i=1; i<=pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const content = await page.getTextContent();
+                    text += content.items.map(item => item.str).join(' ');
+                }
+                const regex = /([A-Z]{3,})\s*\((adj|noun|verb|adv)\)\s*(.*?)(?=[A-Z]{3,}\s*\(|\s{3,}|$)/g;
+                let m; while((m = regex.exec(text)) !== null) {
+                    if(!state.vocab.find(x => x.word === m[1])) {
+                        state.vocab.unshift({word: m[1], type: m[2], mean: m[3].trim().substring(0, 300)});
+                    }
+                }
+                save(); renderVocab();
+            };
+            reader.readAsArrayBuffer(f);
+        }
+
+        let mastery, growth;
+        function initCharts() {
+            const mCtx = document.getElementById('masteryChart')?.getContext('2d');
+            if(mCtx) {
+                if(mastery) mastery.destroy();
+                const d = Object.values(MASTER_SYLLABUS).map(s => {
+                    let t=0, dn=0; s.modules.forEach(m => m.topics.forEach(x => { t++; if(state.matrix[x]) dn++; }));
+                    return Math.round((dn/t)*100);
+                });
+                mastery = new Chart(mCtx, {
+                    type: 'radar',
+                    data: { labels: ['QA', 'VARC', 'DILR'], datasets: [{ data: d, backgroundColor: 'rgba(212, 175, 55, 0.2)', borderColor: '#D4AF37', borderWidth: 6, pointRadius: 8, pointBackgroundColor: '#D4AF37' }] },
+                    options: { scales: { r: { angleLines: { display: false }, grid: { color: 'rgba(212,175,55,0.2)' }, pointLabels: { color: '#D4AF37', font: { family: 'Space Grotesk', size: 16, weight: '900' } }, ticks: { display: false }, beginAtZero: true, max: 100 } }, plugins: { legend: { display: false } } }
+                });
+            }
+            const gCtx = document.getElementById('growthChart')?.getContext('2d');
+            if(gCtx) {
+                if(growth) growth.destroy();
+                const logs = state.registry.slice(0, 10).reverse();
+                growth = new Chart(gCtx, {
+                    type: 'line',
+                    data: { labels: logs.map(l => l.date), datasets: [{ data: logs.map(l => l.int), borderColor: '#D4AF37', fill: true, backgroundColor: 'rgba(212, 175, 55, 0.1)', tension: 0.4, borderWidth: 6, pointRadius: 0 }] },
+                    options: { scales: { x: { display: false }, y: { display: false } }, plugins: { legend: { display: false } } }
+                });
+            }
+        }
+
+        let tInt;
+        function toggleTimer() {
+            if(tInt) { abortTimer(); return; }
+            let s = 45 * 60; document.getElementById('timer-btn').innerText = "PAUSE CYCLE";
+            document.getElementById('sanctum-pulse').classList.add('animate-pulse');
+            tInt = setInterval(() => {
+                s--;
+                const m = Math.floor(s/60).toString().padStart(2, '0');
+                const sc = (s%60).toString().padStart(2, '0');
+                document.getElementById('timer-display').innerText = `${m}:${sc}`;
+                if(s <= 0) { clearInterval(tInt); alert("Session complete."); }
+            }, 1000);
+        }
+        function abortTimer() { clearInterval(tInt); tInt = null; document.getElementById('timer-display').innerText = "45:00"; document.getElementById('timer-btn').innerText = "Start_Cycle"; document.getElementById('sanctum-pulse').classList.remove('animate-pulse'); }
+
+        function initNotes() {
+            const w = document.getElementById('war-pad'); w.value = state.notes;
+            w.addEventListener('input', () => { state.notes = w.value; save(); document.getElementById('sync-status').style.opacity = 1; setTimeout(() => document.getElementById('sync-status').style.opacity = 0, 1500); });
+        }
+
+        function startClocks() {
+            const target = new Date("2026-11-29T09:00:00");
+            setInterval(() => {
+                const diff = target - new Date();
+                if(diff > 0) {
+                    document.getElementById('cd-days').innerText = Math.floor(diff/(1000*60*60*24)).toString().padStart(3,'0');
+                    document.getElementById('cd-hours').innerText = Math.floor((diff/(1000*60*60))%24).toString().padStart(2,'0');
+                    document.getElementById('cd-mins').innerText = Math.floor((diff/(1000*60))%60).toString().padStart(2,'0');
+                    document.getElementById('cd-secs').innerText = Math.floor((diff/1000)%60).toString().padStart(2,'0');
+                }
+            }, 1000);
+        }
+
+        function openModal(type) {
+            const m = document.getElementById('sov-modal'); const i = document.getElementById('modal-inner');
+            m.classList.remove('hidden');
+            if(type === 'vocab') {
+                i.innerHTML = `<h2 class="hero-text text-6xl text-focus uppercase tracking-tighter">Neural Ingest</h2><div class="space-y-10"><input type="text" id="v-word" placeholder="WORD" class="w-full pb-6 border-b-2 border-white/20 bg-transparent text-6xl font-display italic outline-none"><div class="grid grid-cols-2 gap-12"><input type="text" id="v-type" placeholder="POS" class="w-full pb-4 border-b-2 border-white/20 bg-transparent font-mono text-[12px] uppercase tracking-widest outline-none font-black"><input type="text" id="v-mean" placeholder="DEFINITION" class="w-full pb-4 border-b-2 border-white/20 bg-transparent font-mono text-[12px] uppercase tracking-widest outline-none font-black"></div></div><div class="flex gap-12 pt-12"><button onclick="closeModal()" class="font-mono text-sm text-white/40 uppercase font-black tracking-widest">Cancel</button><button onclick="commitVocab()" class="font-mono text-sm text-gold border-2 border-gold px-16 py-6 rounded-[2rem] hover:bg-gold hover:text-black transition-all uppercase font-black tracking-[0.2em] shadow-2xl">Inject</button></div>`;
+            }
+        }
+        function closeModal() { document.getElementById('sov-modal').classList.add('hidden'); }
+        function commitVocab() { const w = document.getElementById('v-word').value; if(w) { state.vocab.unshift({word: w, type: document.getElementById('v-type').value, mean: document.getElementById('v-mean').value}); save(); renderVocab(); closeModal(); } }
+        function addMantra() { const t = prompt("Inscribe wisdom:"); const a = prompt("Source:"); if(t) { state.spirit.unshift({id: Date.now(), text: t, auth: a}); save(); renderSpirit(); } }
+        function hardReset() { if(confirm("DANGER: This will permanently wipe your node. Proceed?")) { localStorage.clear(); location.reload(); } }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
